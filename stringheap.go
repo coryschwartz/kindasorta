@@ -26,12 +26,6 @@ func (s *stringHeap) Push(x interface{}) {
 	(*s).Strs = append((*s).Strs, x.(datedString))
 }
 
-// func (s *stringHeap) Pop() interface{} {
-// 	x := (*s).Strs[0]
-// 	(*s).Strs = (*s).Strs[1:]
-// 	return x
-// }
-
 func (s *stringHeap) Pop() interface{} {
 	n := len((*s).Strs) - 1
 	x := (*s).Strs[n]
