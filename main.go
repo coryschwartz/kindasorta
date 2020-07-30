@@ -6,11 +6,14 @@ import (
 )
 
 func main() {
-	heapSize := flag.Int("-max", 1000, "maximum lines of text to keep in memory while sorting")
+	window := flag.Int("win", 1000, "window-size -- the number of lines to consider while doing the sort")
+	showtime := flag.Bool("showtime", false, "print the detected timestamp")
+	showsource := flag.Bool("showsource", false, "print the source where the line was generated")
+
 	flag.Parse()
 
-	inCh := make(chan string, 0)
-	outCh := make(chan string, 0)
+	inCh := make(chan datedString, 0)
+	outCh := make(chan datedString, 0)
 	outDone := make(chan bool, 0)
 
 	// start the input workers
@@ -22,14 +25,13 @@ func main() {
 
 	// heap sort
 	sh := &stringHeap{
-		Strs: make([]string, 0),
-		Fdr:  dateOrOld,
-		Max:  *heapSize,
+		Strs: make([]datedString, 0),
+		Max:  *window,
 	}
 	go stringHeapWorker(sh, inCh, outCh)
 
 	// write the output
-	go stdoutWorker(outCh, outDone)
+	go stdoutWorker(outCh, outDone, *showtime, *showsource)
 
 	wg.Wait() // all readers done reading
 	close(inCh)
